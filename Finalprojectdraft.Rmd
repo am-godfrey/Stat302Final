@@ -1,0 +1,90 @@
+---
+title: "Final Project Draft"
+author: "Aidan Godfrey, Irene Zhang, Benjamin Lewis "
+date: "4/21/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Background
+
+### What is the purpose of the project?
+ 
+
+* <font size="3">  Our analysis will be heavily based on grouping the data and seeing if the person uses their dominant hand or non-dominant hand more often <font/>
+*  <font size="3">  We are studying two cases of wether over ten (10) seperate mealtimes with Irene Zhang's parent, how often do they touch there face with their dominant and non-dominant hand? <font/>
+
+
+#### Goal: We want to see for each person, what hand are they more likely to use to touch their face.
+  
+
+<hr/>
+  
+## Project outlook
+
+* <font size="3"> We want to see what hand a person uses to touch their face more often <font/>
+* <font size="3"> This can be important in terms of a virus spreading, in that if someone uses their dominant hand to use things, then they touch there faces, viruses may spread at higher rates <font/>
+*  <font size="3"> We will look at the total times two memberes of Irene's Family touches there face
+* <font size="3"> Group them together to make a statment of wether a person use their dominant. <font>
+
+> Null Hypothesis: H0 -- There is no difference in the difference between the proportion of what hand is used to touch someone's face (p dominant == p non-dominant)
+
+
+> Alternative Hypothesis: HA -- There is a difference in the proportion of what hand is used to touch someone's face (p dominant != p non-dominant).
+
+#### Note: For this test, we want to answer they use one hand more often for each person.
+
+<hr/>
+
+## Alternative outlook
+
+We might be looking at a analyzitation of who touches there face more often per mealtime, difference of two proprotions. 
+
+Who uses dominant hand more often, the mother or father?
+
+> Null Hypothesis: H0 -- There is no difference between the proportion of hand touches with the dominant hand between Irene's Mother and Father. (p fatherdomi == p motherdomi)
+
+> Alternative Hypothesis: HA -- There is a difference between the proportion of hand touches with the dominant hand between Irene's Mother and Father.(p fatherdomi != p motherdomi)
+
+
+#### Note: For this test, we want to answer if a parent uses there dominant hand more often than the other. I THINK WE SHOULD USE THE FIRST ONE.
+
+<hr/>
+
+#### Data Collection
+
+The overall data collection was done with these guidlines to ensure the integrity of the study
+
+* Irene counted how often her parents touched their face in each of there mealtimes
+* We also categorize the reasons for them to touch their face to be: 
+  + Directly touching face
+  + Scratch unintentionally or intentionally
+  + Using of paper tissue
+  + Touching their hair near their face
+  + DISCLAIMER: using a utensil and touching the face was not included
+* Everytime someone touched their face Irene would keep track on there phone without the parents noticing
+* Irene has done the effort to keep the expereiment blind to both of the participants, because if they were aware of such a study, their behaviors would be abnormal.
+* The experiment was done across 10 seperate consecutive days
+
+<hr/>
+
+
+ FINISH THIS ONCE IRENE PUBSLISHEs THE DATA
+## Data Analysis
+
+```{r data wrangle}
+dad = c()
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
