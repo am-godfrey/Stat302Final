@@ -79,17 +79,25 @@ mtotal <- as.matrix(total_touches)
 dom <- as.matrix(dominanttouches)
 dom <- dom[,c(2,3,4,5,6,7,8,9,10,11)]
 mtotal <- mtotal[,c(2,3,4,5,6,7,8,9,10,11)]
-numeric_dom = matrix(as.numeric(unlist(dom)),nrow=nrow(dom)) 
+
+numeric_dom = matrix(as.numeric(unlist(dom)),nrow=nrow(dom))
 colnames(numeric_dom) <- colnames(dom)
 rownames(numeric_dom) <- c("DH Father", "DH Mother")
+
 numeric_total = matrix(as.numeric(unlist(mtotal)),nrow=nrow(mtotal)) 
 colnames(numeric_total) <- colnames(mtotal)
 rownames(numeric_total) <- c("All Father", "All Mother")
+
 sum_total = rowSums(numeric_total)
 sum_dom = rowSums(numeric_dom)
+sum_nondom = sum_total - sum_dom
 unf_table = t(cbind(sum_total, sum_dom))
 colnames(unf_table) <- c("Father" , "Mother")
 rownames(unf_table) <- c("Total", "Dom Hand")
+
+numeric_nondom = t(cbind(sum_dom, sum_nondom))
+colnames(numeric_nondom) = c("Father", "Mother")
+rownames(numeric_nondom) = c("Dom Hand", "Nondom Hand")
 numeric_total
 numeric_dom
 ```
@@ -116,8 +124,8 @@ finished_table
 In this graph, one can see two things. Both parents touched their face with the dominant hand more often, especially the mother. Also, The father touched his hands nearly twice as much as the mother.
 
 ```{r counts graph, echo=FALSE}
-barplot(unf_table, main = "Number of Faces Touches and With Dominant Hand touches", col=c("darkblue" , "red"),
-legend = rownames(unf_table),ylab = "Face Touches", beside = TRUE)
+barplot(numeric_nondom, main = "Number of Faces Touches with Dominant vs Non-Dominant Hand", col=c("darkblue" , "red"),
+legend = rownames(numeric_nondom),ylab = "Face Touches", beside = FALSE)
 ```
 
 <hr/>
