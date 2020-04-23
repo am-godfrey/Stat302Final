@@ -16,48 +16,46 @@ library(lubridate)
 ### What is the purpose of the project?
  
 
-* <font size="3">  Our analysis will be heavily based on grouping the data and seeing if the person uses their dominant hand or non-dominant hand more often <font/>
-*  <font size="3">  We are studying two cases of wether over ten (10) seperate mealtimes with Irene Zhang's parent, how often do they touch there face with their dominant and non-dominant hand? <font/>
+* <font size="3">  Our analysis will be heavily based on grouping the data and seeing if the person uses their dominant hand or non-dominant hand more often. <font/>
+*  <font size="3">  We are studying two cases of ten (10) separate mealtimes with Irene Zhang's parent, counting how often they touch their face with their dominant and non-dominant hands? <font/>
 
 
-#### Goal: We want to see, in general, what hand are they more likely to use to touch their face? The dominant or non-dominant hand?
+#### Goal: We want to see, in general, what hand are they more likely to use to touch their face? Their dominant or non-dominant hand?
   
 
 <hr/>
   
 ## Project outlook
 
-* <font size="3"> We want to see what hand a person uses to touch their face more often <font/>
-* <font size="3"> This can be important in terms of a virus spreading, in that if someone uses their dominant hand to use things, then they touch there faces, viruses may spread at higher rates <font/>
-*  <font size="3"> We will look at the total times two memberes of Irene's Family touches their face
-* <font size="3"> We will group them together to make a statment of wether a person in genereal use their dominant. <font>
+* <font size="3"> We want to see what hand a person uses to touch their face more often. <font/>
+* <font size="3"> This can be important in terms of a virus spreading in that if someone uses their dominant hand to use things then touch there face, viruses may spread at higher rates. <font/>
+*  <font size="3"> We will look at the total times two memberes of Irene's Family touches their face.
+* <font size="3"> We will group them together to make a statment of whether a person in general will use their dominant or non-dominant hand to touch their face. <font>
 
-> Null Hypothesis: H0 -- There is no difference in the difference between the proportion of what hand is used to touch someone's face (p dominant == p non-dominant).
+> Null Hypothesis: $H_0$ -- There is no difference between the proportion of which hand is used to touch someone's face ($p_{dom}$ == $p_{non-dom}$).
 
-
-> Alternative Hypothesis: HA -- There is a difference in the proportion of what hand is used to touch someone's face (p dominant != p non-dominant).
-
+> Alternative Hypothesis: $H_A$ -- There is a difference in the proportion of which hand is used to touch someone's face ($p_{dom}$ != $p_{non-dom}$).
 
 
 <hr/>
 
 ## Data Collection
 
-The overall data collection was done with these guidlines to ensure the integrity of the study
+The overall data collection was done with these guidlines to ensure the integrity of the study:
 
-* Irene counted how often her parents touched their face in each of their 10 dinners
-* We also categorize the reasons for them to touch their face to be: 
+* Irene counted how often her parents touched their face in each of their 10 dinners.
+* We also categorize the reasons for facial contact: 
   + Directly touching face
-  + Scratch unintentionally or intentionally
-  + Using of paper tissue
-  + Touching their hair near their face
+  + Scratch intentionally or unintentionally
+  + Using paper napkin
+  + Touching hair near the face
   + DISCLAIMER: using a utensil and touching the face was not included
   
-* Everytime someone touched their face Irene would keep track on there phone without the parents noticing
+* Everytime someone touched their face Irene would keep track on their phone without the parents noticing.
 
-* Irene has done the effort to keep the expereiment blind to both of the participants, because if they were aware of such a study, their behaviors would be abnormal
+* Irene has done the effort to keep the experiment blind to both of the participants, because if they were aware of such a study, their behaviors would be abnormal.
 
-* The experiment was done across 10 seperate consecutive days
+* The experiment was done across 10 separate consecutive days.
 
 <hr/>
 
@@ -73,7 +71,6 @@ The second one shows the **number of touches with the dominant hand** done by th
 ```{r reading origninal data, include=FALSE}
 total_touches = read_csv("totaltouches.csv")
 dominanttouches = read_csv("dominanttouches.csv",)
-
 ```
 
 
@@ -82,21 +79,17 @@ mtotal <- as.matrix(total_touches)
 dom <- as.matrix(dominanttouches)
 dom <- dom[,c(2,3,4,5,6,7,8,9,10,11)]
 mtotal <- mtotal[,c(2,3,4,5,6,7,8,9,10,11)]
-
 numeric_dom = matrix(as.numeric(unlist(dom)),nrow=nrow(dom)) 
 colnames(numeric_dom) <- colnames(dom)
 rownames(numeric_dom) <- c("DH Father", "DH Mother")
-
 numeric_total = matrix(as.numeric(unlist(mtotal)),nrow=nrow(mtotal)) 
 colnames(numeric_total) <- colnames(mtotal)
 rownames(numeric_total) <- c("All Father", "All Mother")
-
 sum_total = rowSums(numeric_total)
 sum_dom = rowSums(numeric_dom)
 unf_table = t(cbind(sum_total, sum_dom))
 colnames(unf_table) <- c("Father" , "Mother")
 rownames(unf_table) <- c("Total", "Dom Hand")
-
 numeric_total
 numeric_dom
 ```
@@ -104,12 +97,12 @@ numeric_dom
 
 ### Summarized Data
 
-Here, the table summarizing each person, mother or father, and the total counts and which hand was used.
+Here the table summarizes each person, mother or father, and the total counts of which hand was used.
 ```{r show good table, echo = FALSE}
 unf_table
 ```
 
-This table is the mother and father grouped together comparing the combined total number of face touches and the number of touches done with the dominant hand.
+This table is the mother and father grouped together, comparing the combined total number of face touches and the number of touches done with the dominant hand.
 ```{r test, echo = FALSE}
 finished_table = t(t(rowSums(unf_table)))
 colnames(finished_table) <- c("Father and Mother")
@@ -120,7 +113,7 @@ finished_table
 
 ### Count of Hand Touching at a Glance
 
-In this graph, one can see two things. Both parents touched their face with the dominant hand more often, espically the mother. Also, The father touched his hands nearly 2X as much as the mother.
+In this graph, one can see two things. Both parents touched their face with the dominant hand more often, especially the mother. Also, The father touched his hands nearly twice as much as the mother.
 
 ```{r counts graph, echo=FALSE}
 barplot(unf_table, main = "Number of Faces Touches and With Dominant Hand touches", col=c("darkblue" , "red"),
@@ -135,7 +128,7 @@ Here, we will only adress the first hypothesis observed by pooling the mother an
 
 ### Are they more likely to touch their face with their dominant hand or not?
 
-First, we will assume independence between each person, the mother and father, and grouped them to get a more representative sample and larger n size.
+First, we will assume independence between each person --- the mother and father --- and group them to get a more representative sample and larger $n$ size.
 
 Next, We know for the success and failure rate to be greater than 10 for dominant and non-dominant hand touching.
 
@@ -143,7 +136,7 @@ Next, We know for the success and failure rate to be greater than 10 for dominan
 
 Therefore, we can proceed for a test of a single proportion under the assumption of the null hypothesis.
 
-#### P-Hat (Dominant Hand Touches / Total Hand Touches)
+#### $\hat{p}$ (Dominant Hand Touches / Total Hand Touches)
 
 ```{r displaying phat, echo = FALSE}
 total = finished_table[1,]
@@ -155,18 +148,18 @@ round(phat, 3)
 The proportion is the percentage of times the mother or father used their dominant hand.
 
 
-### Z-Score and P-value
+### $Z$-Score and $P$-value
 
-Now, we calculate the p-value using a z-score test under the null hypothesis.
+Now, we calculate the $p$-value using a $Z$-score test under the null hypothesis.
 
-First we calculate the z-score.
+First we calculate the $Z$-score.
 
 ```{r Fininding Test p-Value, echo = FALSE}
 se = sqrt(0.5 * (1 - 0.5) / total)
 zscore = (phat - 0.5)/se
 round(zscore, 2)
 ```
-The Z-score is `r round(zscore,2)`, which if graphed as shown below, is rather unlikely
+The $Z$-score is `r round(zscore,2)`, which if graphed as shown below, is rather unlikely
 
 ```{r graph zscore, echo = FALSE}
 ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
@@ -182,13 +175,13 @@ pvalue = 2 * pnorm(zscore, lower.tail = FALSE)
 rcodep = round(pvalue, 5)
 round(pvalue, 5)
 ```
-The p-value is exteremly small at 0.00059, which is rather unlikely as seen on the graph.
+The $p$-value is exteremly small at 0.00059, which is rather unlikely as seen on the graph.
 
 ### Interpretation
 
-Our p-value is stastically significnat (p=0.00059, two-sided z-test for a single proportion) so **we reject the null hypothesis.**
+Our $p$-value is stastically significant ($p$=0.00059, two-sided $Z$-test for a single proportion) so **we reject the null hypothesis.**
 
-There is evidence that the parents touch their face with their dominant hand more than half the time. This is not represenative of the entire population at a whole, as stated with our possible improvments below, but it allows us to see that in the case of two people, the dominant hand is certainly used more often.
+There is evidence that the parents touch their face with their dominant hand more than half the time. This is not represenative of the entire population as a whole, as stated with our possible improvments below, but it allows us to see that in the case of two people, the dominant hand is certainly used more often.
 
 ### Potential Improvment
 
@@ -206,4 +199,3 @@ Some improvments to the experiement would be as stated below:
   
 
 ##### Note: Change all dataframes to KableExtra
-
