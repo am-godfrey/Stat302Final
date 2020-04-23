@@ -7,6 +7,8 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lubridate)
 ```
 
 ## Background
@@ -18,7 +20,7 @@ knitr::opts_chunk$set(echo = TRUE)
 *  <font size="3">  We are studying two cases of wether over ten (10) seperate mealtimes with Irene Zhang's parent, how often do they touch there face with their dominant and non-dominant hand? <font/>
 
 
-#### Goal: We want to see for each person, what hand are they more likely to use to touch their face.
+#### Goal: We want to see, in general, what hand are they more likely to use to touch their face? The dominant or non-dominant hand?
   
 
 <hr/>
@@ -27,64 +29,181 @@ knitr::opts_chunk$set(echo = TRUE)
 
 * <font size="3"> We want to see what hand a person uses to touch their face more often <font/>
 * <font size="3"> This can be important in terms of a virus spreading, in that if someone uses their dominant hand to use things, then they touch there faces, viruses may spread at higher rates <font/>
-*  <font size="3"> We will look at the total times two memberes of Irene's Family touches there face
-* <font size="3"> Group them together to make a statment of wether a person use their dominant. <font>
+*  <font size="3"> We will look at the total times two memberes of Irene's Family touches their face
+* <font size="3"> We will group them together to make a statment of wether a person in genereal use their dominant. <font>
 
-> Null Hypothesis: H0 -- There is no difference in the difference between the proportion of what hand is used to touch someone's face (p dominant == p non-dominant)
+> Null Hypothesis: H0 -- There is no difference in the difference between the proportion of what hand is used to touch someone's face (p dominant == p non-dominant).
 
 
 > Alternative Hypothesis: HA -- There is a difference in the proportion of what hand is used to touch someone's face (p dominant != p non-dominant).
 
-#### Note: For this test, we want to answer they use one hand more often for each person.
+
 
 <hr/>
 
-## Alternative outlook
-
-We might be looking at a analyzitation of who touches there face more often per mealtime, difference of two proprotions. 
-
-Who uses dominant hand more often, the mother or father?
-
-> Null Hypothesis: H0 -- There is no difference between the proportion of hand touches with the dominant hand between Irene's Mother and Father. (p fatherdomi == p motherdomi)
-
-> Alternative Hypothesis: HA -- There is a difference between the proportion of hand touches with the dominant hand between Irene's Mother and Father.(p fatherdomi != p motherdomi)
-
-
-#### Note: For this test, we want to answer if a parent uses there dominant hand more often than the other. I THINK WE SHOULD USE THE FIRST ONE.
-
-<hr/>
-
-#### Data Collection
+## Data Collection
 
 The overall data collection was done with these guidlines to ensure the integrity of the study
 
-* Irene counted how often her parents touched their face in each of there mealtimes
+* Irene counted how often her parents touched their face in each of their 10 dinners
 * We also categorize the reasons for them to touch their face to be: 
   + Directly touching face
   + Scratch unintentionally or intentionally
   + Using of paper tissue
   + Touching their hair near their face
   + DISCLAIMER: using a utensil and touching the face was not included
+  
 * Everytime someone touched their face Irene would keep track on there phone without the parents noticing
-* Irene has done the effort to keep the expereiment blind to both of the participants, because if they were aware of such a study, their behaviors would be abnormal.
+
+* Irene has done the effort to keep the expereiment blind to both of the participants, because if they were aware of such a study, their behaviors would be abnormal
+
 * The experiment was done across 10 seperate consecutive days
 
 <hr/>
 
 
- FINISH THIS ONCE IRENE PUBSLISHEs THE DATA
+## Data at a Glance
+
+
+### Orignial Data
+We included two tables of data, one shows the **total amount of touches of each parent** on a specific date (Month.Day). (DH = Dominant Hand)
+
+The second one shows the **number of touches with the dominant hand** done by the person on the specific date.
+
+```{r reading origninal data, include=FALSE}
+total_touches = read_csv("totaltouches.csv")
+dominanttouches = read_csv("dominanttouches.csv",)
+
+```
+
+
+```{r matrix manipulation, echo=FALSE}
+mtotal <- as.matrix(total_touches)
+dom <- as.matrix(dominanttouches)
+dom <- dom[,c(2,3,4,5,6,7,8,9,10,11)]
+mtotal <- mtotal[,c(2,3,4,5,6,7,8,9,10,11)]
+
+numeric_dom = matrix(as.numeric(unlist(dom)),nrow=nrow(dom)) 
+colnames(numeric_dom) <- colnames(dom)
+rownames(numeric_dom) <- c("DH Father", "DH Mother")
+
+numeric_total = matrix(as.numeric(unlist(mtotal)),nrow=nrow(mtotal)) 
+colnames(numeric_total) <- colnames(mtotal)
+rownames(numeric_total) <- c("All Father", "All Mother")
+
+sum_total = rowSums(numeric_total)
+sum_dom = rowSums(numeric_dom)
+unf_table = t(cbind(sum_total, sum_dom))
+colnames(unf_table) <- c("Father" , "Mother")
+rownames(unf_table) <- c("Total", "Dom Hand")
+
+numeric_total
+numeric_dom
+```
+
+
+### Summarized Data
+
+Here, the table summarizing each person, mother or father, and the total counts and which hand was used.
+```{r show good table, echo = FALSE}
+unf_table
+```
+
+This table is the mother and father grouped together comparing the combined total number of face touches and the number of touches done with the dominant hand.
+```{r test, echo = FALSE}
+finished_table = t(t(rowSums(unf_table)))
+colnames(finished_table) <- c("Father and Mother")
+finished_table
+```
+
+<hr/>
+
+### Count of Hand Touching at a Glance
+
+In this graph, one can see two things. Both parents touched their face with the dominant hand more often, espically the mother. Also, The father touched his hands nearly 2X as much as the mother.
+
+```{r counts graph, echo=FALSE}
+barplot(unf_table, main = "Number of Faces Touches and With Dominant Hand touches", col=c("darkblue" , "red"),
+legend = rownames(unf_table),ylab = "Face Touches", beside = TRUE)
+```
+
+<hr/>
+
 ## Data Analysis
 
-```{r data wrangle}
-dad = c()
+Here, we will only adress the first hypothesis observed by pooling the mother and father data together to see as a sample of two people.
+
+### Are they more likely to touch their face with their dominant hand or not?
+
+First, we will assume independence between each person, the mother and father, and grouped them to get a more representative sample and larger n size.
+
+Next, We know for the success and failure rate to be greater than 10 for dominant and non-dominant hand touching.
+
+### Test Statistic
+
+Therefore, we can proceed for a test of a single proportion under the assumption of the null hypothesis.
+
+#### P-Hat (Dominant Hand Touches / Total Hand Touches)
+
+```{r displaying phat, echo = FALSE}
+total = finished_table[1,]
+dominant = finished_table[2,]
+phat = dominant/total
+round(phat, 3)
 ```
 
-## Including Plots
+The proportion is the percentage of times the mother or father used their dominant hand.
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+### Z-Score and P-value
+
+Now, we calculate the p-value using a z-score test under the null hypothesis.
+
+First we calculate the z-score.
+
+```{r Fininding Test p-Value, echo = FALSE}
+se = sqrt(0.5 * (1 - 0.5) / total)
+zscore = (phat - 0.5)/se
+round(zscore, 2)
+```
+The Z-score is `r round(zscore,2)`, which if graphed as shown below, is rather unlikely
+
+```{r graph zscore, echo = FALSE}
+ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
+stat_function(fun = dnorm) + 
+  stat_function(fun = dnorm, 
+                xlim = c(zscore, 4),
+                geom = "area", fill = 'red')  + 
+  geom_vline(xintercept = zscore, color = 'red')
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+```{r p-value, echo = FALSE}
+pvalue = 2 * pnorm(zscore, lower.tail = FALSE)
+rcodep = round(pvalue, 5)
+round(pvalue, 5)
+```
+The p-value is exteremly small at 0.00059, which is rather unlikely as seen on the graph.
+
+### Interpretation
+
+Our p-value is stastically significnat (p=0.00059, two-sided z-test for a single proportion) so **we reject the null hypothesis.**
+
+There is evidence that the parents touch their face with their dominant hand more than half the time. This is not represenative of the entire population at a whole, as stated with our possible improvments below, but it allows us to see that in the case of two people, the dominant hand is certainly used more often.
+
+### Potential Improvment
+
+Some improvments to the experiement would be as stated below:
+
+* Gather a much larger sample size around a wide variety of people
+  + Wathcing two people alone is not represenative of the whole population whatesoever, but gives us a clue into a reasonable conjecture.
+  + A variety of left handers and right handers are needed, perhaps a specific hand is more likely independent of what the dominant hand is. In our expierement the Father was right-handed and the Mother was left-handed.
+  + This family might touch their face less often due to the current health climate, or just personal family tendicies
+  
+
+* Track across multiple sample times since restricting oneself to the dinner time is not represenative.
+  + Being self-concious around others, eating and spilling food, and behavioral factors could affect how often one touches there face at dinner
+  + Outside of mealtimes, while it would be more difficult to study in a blind study, but it would be more represenatative.
+  
+
+##### Note: Change all dataframes to KableExtra
+
