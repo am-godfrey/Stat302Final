@@ -48,7 +48,7 @@ The overall data collection was done with these guidlines to ensure the integrit
   
 * Irene has done the effort to keep the experiment blind to both of the participants, because if they were aware of such a study, their behaviors would be abnormal.
 
-* The experiment was done across 10 separate consecutive days.
+* The experiment was done across 10 separate consecutive days in April 2020.
 
 
 <hr/>
@@ -62,23 +62,23 @@ We plotted the total number of touches per day as seen bewlow. In this plot, one
 
 ```{r reading origninal data, include=FALSE}
 total_touches = read_csv("totaltouches.csv")
-dominanttouches = read_csv("dominanttouches.csv",)
+dominanttouches = read_csv("dominanttouches.csv")  #Read in the data
 ```
 ```{r matrix manipulation, echo=FALSE}
 mtotal <- as.matrix(total_touches)
-dom <- as.matrix(dominanttouches)
+dom <- as.matrix(dominanttouches)              ## Get only the number
 dom <- dom[,c(2,3,4,5,6,7,8,9,10,11)]
 mtotal <- mtotal[,c(2,3,4,5,6,7,8,9,10,11)]
 
 
-numeric_dom = matrix(as.numeric(unlist(dom)),nrow=nrow(dom))
+numeric_dom = matrix(as.numeric(unlist(dom)),nrow=nrow(dom))    ## Make a numeric table for dominant hands
 colnames(numeric_dom) <- colnames(dom)
 rownames(numeric_dom) <- c("DominantHandFather", "DominantHandMother")
 
-numeric_total =matrix(as.numeric(unlist(mtotal)),nrow=nrow(mtotal)) 
+numeric_total =matrix(as.numeric(unlist(mtotal)),nrow=nrow(mtotal))  ## Rename so they can be used for KableExtras tables
 colnames(numeric_total) <- colnames(mtotal)
 rownames(numeric_total) <- c("TotalFather", "TotalMother")
-numeric_total = data.frame(numeric_total) ## CHange to dataframe
+numeric_total = data.frame(numeric_total)          ## CHange to dataframe and labeling
 names(numeric_total) <- colnames(mtotal)
 numeric_total = data.frame(t(numeric_total))
 ```
@@ -86,7 +86,7 @@ numeric_total = data.frame(t(numeric_total))
 ```{r plot over time, echo = FALSE}
 a = c("4/07","4/08","4/09","4/11", "4/13", "4/14","4/16" ,"4/18" ,"4/19" ,"4/20" )
 graphtouches = numeric_total
-graphtouches$dates = a
+graphtouches$dates = a                  ## Have to change 4.06 -> 4/6 because of numeric ordering on ggplots
 
 graphdominant = numeric_dom
 graphdominant = data.frame(t(graphdominant))
@@ -113,24 +113,23 @@ The second one shows the **number of touches with the dominant hand** done by th
 ```{r tables, echo = FALSE}
 sum_total = rowSums(t(numeric_total))
 sum_dom = rowSums(numeric_dom)
-sum_nondom = sum_total - sum_dom
+sum_nondom = sum_total - sum_dom   ## Getting sums
 
-nondominant = sum_total - sum_dom
-unf_table = t(cbind(nondominant, sum_dom))
+nondominant = sum_total - sum_dom  ## Used to get non-dominant rows
+
+unf_table = t(cbind(nondominant, sum_dom)) ## Make a 2x2 matrix that will be used in both analysis
 
 
 total_domtable = t(cbind(sum_total, sum_dom))
 colnames(total_domtable) <- c("Father" , "Mother")
-rownames(total_domtable) <- c("Total Touches", "Dominant Hand")
+rownames(total_domtable) <- c("Total Touches", "Dominant Hand")   ## Label both
 
 colnames(unf_table) <- c("Father" , "Mother")
 rownames(unf_table) <- c("Non-dominant-Hand", "Dominant-Hand")
 
-numeric_nondom = t(cbind(sum_dom, sum_nondom))
-colnames(numeric_nondom) = c("Father", "Mother")
-rownames(numeric_nondom) = c("Dominant-Hand", "Non-dominant Hand")
 
-kable(t(numeric_total)) %>%
+
+kable(t(numeric_total)) %>%  ## Plot for easy looks
   kable_styling(full_width = FALSE,position = "left", bootstrap_options = c("striped", "hover", "condensed"))
 kable(numeric_dom) %>%
   kable_styling(full_width = FALSE, position = 'left', bootstrap_options = c("striped", "hover", 'condensed'))
@@ -154,8 +153,6 @@ Here the table summarizing each person, mother or father, and the total counts o
 ```{r show good table, echo = FALSE}
 kable(unf_table) %>%
   kable_styling(full_width = FALSE, position = "left")
-#kable(total_domtable) %>%
-#  kable_styling(full_widt = FALSE, position = "left")
 ```
 
 With this we can see that our proportion of each parent using their dominant hand is $\hat{p}_{Father}=24/35$ and  $\hat{p}_{Mother} = 15/18$. Clearly, both parent used their dominant hand more often than their non-dominant hand.
@@ -164,14 +161,14 @@ This relationship can be seen graphically below.
 
 ```{r counts graph, echo=FALSE}
 graph_table <- data.frame(unf_table)
-names <- c(colnames(graph_table))
+names <- c(colnames(graph_table))                     ## Change to dataframe to melt variables
 graph_table <- t(data.frame(graph_table))
 
-data_m <- melt(as.matrix(graph_table), varnames = c("Parent", "Hand"), id.vars = "Exp")
+data_m <- melt(as.matrix(graph_table), varnames = c("Parent", "Hand"), id.vars = "Parent")  
 
 
 ggplot(data_m %>% group_by(Parent) %>% 
-           mutate(perc = round(value/sum(value),2)), 
+           mutate(perc = round(value/sum(value),2)),   ## Structure taken from https://stackoverflow.com/questions/58707135/ggplot-how-can-i-show-percentage-proportions-and-total-sum user: brtk
        aes(x = Parent, y = perc, 
            fill = Hand, cumulative = TRUE)) +
     geom_col() +
@@ -210,16 +207,23 @@ We pooled the estimate of $\hat{p}$ under the assumption of the null hypothesis.
 
 ### $Z$-Score and $P$-value
 
-First, we calculate the $Z$-score with a pooled standard error.
+We calculate the $Z$-score with a pooled standard error, and the $p$-value accordingly. 
 
 ```{r Fininding Test p-Value, echo = FALSE}
 se = sqrt( phat * (1-phat) /mothertotal + phat*(1-phat)/ fathertotal)
 zscore = (difference - 0 )/se
 zvalue = round(zscore, 2)
-zvalue
+pvalue = 2 * pnorm(zscore, lower.tail = FALSE)
+
+m <- t(as.matrix(c(zvalue, pvalue)))
+colnames(m) <- c("Z-score", "p-value")
+kable(m)%>%
+  kable_styling(full_width = FALSE, position = "left")
 ```
 
-The $Z$-score is `r round(zscore,2)`, which if graphed as shown below, is rather likely.
+The $Z$-score is `r round(zscore,2)` and the $p$-value is at 0.24834, which if graphed as shown below, is rather likely. 
+
+
 
 ```{r graphzscore, echo = FALSE}
 ggplot(data.frame(x = c(-4, 4)), aes(x = x)) +
@@ -231,13 +235,6 @@ stat_function(fun = dnorm) +
   ggtitle("Normal Distribution with Z-Score")
 ```
 
-```{r p-value, echo = FALSE}
-pvalue = 2 * pnorm(zscore, lower.tail = FALSE)
-rcodep = round(pvalue, 5)
-round(pvalue, 5)
-```
-
-The $p$-value is at 0.24834, which is rather likely as seen on the graph of a normal distribution.
 
 ### Interpretation
 
@@ -267,7 +264,7 @@ We will have to caluculate the T-score and p-value under the assumption of the n
 avgfather = 35/10
 avgmother = 18/10
 touchesmom = strtoi(as.matrix(total_touches[2,])[2-3])
-touchesdad = strtoi(as.matrix(total_touches[1,])[2-3])
+touchesdad = strtoi(as.matrix(total_touches[1,])[2-3]) # Changed to numeric
 mdiff = touchesmom - touchesdad
 
 avgdif = avgmother - avgfather
@@ -281,7 +278,6 @@ colnames(m)<- c("Mean difference", "N difference", "SD difference")
 kable(m)%>%
   kable_styling(full_width = FALSE, position = "left")
 
-
 ```
 
 The test stastic, or mean difference, is the difference between the mean number of times the parents touch their face which is -1.7. This statistic means the mother touches her face on average 1.7 times less than the father in this sample.
@@ -291,7 +287,7 @@ If we take a look at the distribution of differences on each day (Mother touches
 On all 10 days, the father touched his face more or equal to the mother.
 
 ```{r graphhisto, echo = FALSE}
-graph_diff = data.frame(x = mdiff)
+graph_diff = data.frame(x = mdiff) ## Change to Graph
 ggplot()+
   geom_histogram(data =graph_diff, aes(x =x), binwidth = 1, col = "black", fill = "blue")+
   xlab("Differnece in Total Touches (Mother-Father)")+
@@ -304,30 +300,17 @@ ggplot()+
 Now, we calculate the T-score and P-value under 9 degrees of freedom. Below is a table of these statistics.
 
 ```{r paired p-Value, echo = FALSE}
-meandiff = mean(mdiff)
-ndiff = 10
-sdiff = sd(mdiff)
-sediff = sdiff / sqrt(ndiff)
 tscore = (avgdif - 0) / sediff
 pvalue = 2 * pt(tscore, df = 9,lower.tail = TRUE)
 
 m <- t(as.matrix(c(tscore, pvalue, 9)))
-colnames(m) <- c("T-score" , "p-value", "Degrees of Freedom")
+colnames(m) <- c("T-score" , "p-value", "Degrees of Freedom")  ## Table of T score and p score
 kable(m)%>%
   kable_styling(full_width = FALSE, position = "left")
 ```
 
 The $T$-score is `r round(tscore,2)`, which if graphed as on a t-disitbrition with 9 degrees of freedom, is rather unlikely. 
-Correspondingly, the $p$-value is at 0.00067, which is not statistically likely. Visually, there is very little area under the curve on the graph from where $X \le -5.07.$
-
-```{r graph zscore, echo = FALSE}
-curve(dt(x, df=9), from=-6, to=6, 
-    main = 't Distribution (df = 9)', #add title
-    ylab = 'Density', #change y-axis label
-    lwd = 2, #increase line width to 2
-    col = 'steelblue')
-```
-
+Correspondingly, the $p$-value is at 0.00067, which is not statistically likely. On a t distribution with 9 degrees of freedom, there is very little area under the curve on the graph from where $X \le -5.07.$
 
 
 ### Interpretation
@@ -368,4 +351,7 @@ If we were to make conclusions not only about Irene Zhang's parents, but all mar
 * Track across multiple sample times since restricting oneself to the dinner time is not represenative.
   + Being self-concious around others, eating and spilling food, and behavioral factors could affect how often one touches there face at dinner
   + Also, hand bevhaior is irregular during mealtimes because of the interaction needed with utensils, plates, and eating with the hands. It must be acknowledged that our data could possibly be biased due to the hand movements involved.
+  
+#### References
 
+All data was collected by Irene Zhang on her parents who were informed of the study afterwards.
